@@ -41,7 +41,7 @@
 
     - name: Copy wallpaper file.
       copy:
-        src: files/wallpaper.png
+        src: files/wallpaper.jpg
         dest: /usr/share/backgrounds/ansible-wallpaper.jpg
         owner: root
         group: root
