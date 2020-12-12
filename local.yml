@@ -4,6 +4,11 @@
   connection: local
   become: true
 
+  vars:
+    nfsmounts:
+      - { src: "192.168.1.93:/volume1/storage", path: "/storage" }
+      - { src: "192.168.1.93:/volume1/GDrive", path: "/GDrive" }
+
   tasks:
 
     - name: Install packages.
@@ -16,4 +21,36 @@
           - curl
           - wget 
           - mlocate
+          - brave-browser
+          - nfs-common
+          - keepassxc
+          - steam
         state: present
+
+    - name: Make new fstab entries for storage.
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        opts: defaults
+        state: mounted
+        fstype: nfs
+        dump: 0
+        pass: 0
+      with_items: "{{ nfsmounts }}"
+
+    - name: Copy wallpaper file.
+      copy:
+        src: files/wallpaper.png
+        dest: /usr/share/backgrounds/ansible-wallpaper.png
+        owner: root
+        group: root
+
+    - name: Set wallpaper.
+      dconf:
+        key: "/org/gnome/desktop/background/picture-uri"
+        value: "'file:///usr/share/backgrounds/ansible-wallpaper.jpg'"
+
+    - name: Set wallpaper position.
+      dconf:
+        key: "/org/gnome/desktop/background/picture-options"
+        value: "'zoom'"
