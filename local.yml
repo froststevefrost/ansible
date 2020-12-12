@@ -64,3 +64,23 @@
         dest: /home/steve/.bashrc
         owner: steve
         group: steve
+
+    - name: Add new ansible user.
+      user:
+        name: velociraptor
+        system: yes
+
+    - name: Set up sudo for ansible user.
+      copy:
+        src: files/sudoer_velociraptor
+        dest: /etc/sudoers.d/velociraptor
+        owner: root
+        group: root
+        mode: 0440
+
+    - name: Add ansible-pull cron job
+      cron:
+        name: Ansible auto-provision
+        user: velociraptor
+        minute: "*/10"
+        job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git
