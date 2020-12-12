@@ -6,7 +6,14 @@
 
   tasks:
 
-    - name: Install htop.
+    - name: Install packages.
       package:
-        name: htop
+        name: 
+          - htop
+          - tmux
+          - vim-nox
+          - neovim
+          - curl
+          - wget 
+          - mlocate
         state: present
