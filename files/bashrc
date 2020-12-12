@@ -1,0 +1,25 @@
+# ADDED BY ANSIBLE
+
+# Set default umask
+ umask 022
+
+# Color variables
+ NC='\033[0m'
+RED='\033[0;31m'
+GRN='\033[0;32m'
+
+# Include the /opt directory in PATH
+[[ $(echo "$PATH" | grep ":/opt") ]] || export PATH=$PATH:/opt
+
+# If I have any other bash config files, source them
+[[ -f ~/.bash_aliases ]] && source ~/.bash_aliases
+[[ -f ~/.bash_functions ]] && source ~/.bash_functions
+
+# Auto change directory when typing dirs
+shopt -s autocd
+
+# Make history infinite
+HISTSIZE= HISTFILESIZE=
+
+# Change default editor
+export EDITOR=/usr/bin/vim
