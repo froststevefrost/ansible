@@ -18,6 +18,7 @@
           - tmux
           - vim-nox
           - neovim
+          - python3-psutil
           - curl
           - wget 
           - mlocate
@@ -27,16 +28,16 @@
           - steam
         state: present
 
-    - name: Make new fstab entries for storage.
-      mount:
-        path: "{{ item.path }}"
-        src: "{{ item.src }}"
-        opts: defaults
-        state: mounted
-        fstype: nfs
-        dump: 0
-        pass: 0
-      with_items: "{{ nfsmounts }}"
+        #    - name: Make new fstab entries for storage.
+        #      mount:
+        #        path: "{{ item.path }}"
+        #        src: "{{ item.src }}"
+        #        opts: defaults
+        #        state: mounted
+        #        fstype: nfs
+        #        dump: 0
+        #        pass: 0
+        #      with_items: "{{ nfsmounts }}"
 
     - name: Copy wallpaper file.
       copy:
