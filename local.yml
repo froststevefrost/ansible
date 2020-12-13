@@ -150,7 +150,7 @@
 
     - name: Change php post max size for nextcloud.
       lineinfile:
-        path: /etc/php/7.4/apache2/php.ini
+        path: /etc/php/7.3/apache2/php.ini
         regex: "^post_max_size.*"
         line: "post_max_size = 1024M"
       notify: restart apache
