@@ -39,7 +39,7 @@
         state: mounted
         fstype: nfs
         dump: 0
-        pass: 0
+        passno: 0
       with_items: "{{ nfsmounts }}"
 
       #- name: Copy wallpaper file.
