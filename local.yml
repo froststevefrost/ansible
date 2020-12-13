@@ -76,13 +76,21 @@
         name: velociraptor
         system: yes
 
-    - name: Set up sudo for ansible user.
+    - name: Add user Steve.
+      user:
+        name: steve
+        password: $6$NIG2yNL5twSPoTMO$ke3lXegKbQsB1zaqAIJRctKi9XCxXBnxGnTDQDG8p2fJu6fZt0vgRlwylvVc1.BjlKjt3H9oGNubymSwLwouI1
+
+    - name: Set up sudo for users.
       copy:
-        src: files/sudoer_velociraptor
-        dest: /etc/sudoers.d/velociraptor
+        src: "files/sudoer_{{ item }}"
+        dest: "/etc/sudoers.d/{{ item }}"
         owner: root
         group: root
         mode: 0440
+      with_items: 
+        - velociraptor
+        - steve
 
     - name: Add ansible-pull cron job
       cron:
