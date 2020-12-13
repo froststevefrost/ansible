@@ -93,7 +93,7 @@
 
     - name: Copy bash files.
       copy:
-        src: "files/{{ items }}"
+        src: "files/{{ item }}"
         dest: "/home/steve/.{{ item }}"
         owner: steve
         group: steve
