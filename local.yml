@@ -141,7 +141,7 @@
 
     - name: Change ownership of nextcloud directory.
       file: 
-        src: /var/www/html/nextcloud
+        path: /var/www/html/nextcloud
         owner: www-data
         group: www-data
         recurse: true
