@@ -145,6 +145,7 @@
         owner: www-data
         group: www-data
         recurse: true
+        state: directory
       notify: restart apache
 
     - name: Change php post max size for nextcloud.
