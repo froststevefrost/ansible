@@ -11,6 +11,17 @@
 
   tasks:
 
+    - name: Install Signal's apt key.
+      apt_key:
+        keyserver:
+          url: https://updates.signal.org/desktop/apt/keys.asc
+          state: present
+
+    - name: Add Signal's apt source.
+      apt_repository:
+        repo: deb https://updates.signal.org/desktop/apt xenial main
+        state: present
+
     - name: Install packages.
       package:
         name: 
@@ -26,6 +37,7 @@
           - nfs-common
           - keepassxc
           - steam
+          - signal-desktop
         state: present
 
         #    - name: Make new fstab entries for storage.
