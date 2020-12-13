@@ -8,21 +8,44 @@
     nfsmounts:
       - { src: "192.168.1.93:/volume1/storage", path: "/storage" }
       - { src: "192.168.1.93:/volume1/GDrive", path: "/GDrive" }
+      - { src: "192.168.1.93:/volume1/NextCloud", path: "/NextCloud" }
 
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+        
   tasks:
 
     - name: Install packages.
       package:
         name: 
           - htop
+          - fail2ban
           - vim
           - vim-nox
           - python3-psutil
+          - python3-PyMySQL
           - curl
           - wget 
           - mlocate
           - nfs-common
+          - mariadb-server
+          - apache2
+          - mariadb-client
+          - php
+          - php-gd
+          - sqlite
+          - php-curl
+          - php-zip
+          - php-xml
+          - php-mbstring
         state: present
+
+    - name: Update locate db.
+      shell: updatedb        
+      changed_when: false
 
     - name: Add user Steve.
       user:
@@ -102,3 +125,70 @@
         user: velociraptor
         minute: "*/10"
         job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git
+
+    - name: Update sshd configs
+      copy:
+        src: files/sshd_config
+        dest: /etc/ssh/sshd_config
+        state: present
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Pull latest NextCloud zip
+      unarchive:
+        src: https://download.nextcloud.com/server/releases/nextcloud-20.0.3.zip
+        dest: /var/www/html/
+        remote_src: true
+
+    - name: Change ownership of nextcloud directory.
+      file: 
+        src: /var/www/html/nextcloud
+        owner: www-data
+        group: www-data
+        recurse: true
+      notify: restart apache
+
+    - name: Change php post max size for nextcloud.
+      lineinfile:
+        path: /etc/php/7.4/apache2/php.ini
+        regex: "^post_max_size.*"
+        line: "post_max_size = 1024M"
+      notify: restart apache
+
+    - name: Change php upload max size for nextcloud.
+      lineinfile:
+        path: /etc/php/7.4/apache2/php.ini
+        regex: "^upload_max_filesize*"
+        line: "upload_max_filesize = 1024M"
+      notify: restart apache
+
+    - name: Change apache2 directory setting.
+      lineinfile:
+        path: /etc/apache2/apache2.conf
+        regex: "AllowOverride None"
+        line: "AllowOverride All"
+      notify: restart apache
+
+    - name: Enable mod_rewrite for apache2.
+      apache2_module:
+        name: rewrite
+        state: present
+      notify: restart apache2
+
+    - name: Disable banner from site.
+      lineinfile:
+        path: /etc/apache2/apache2.conf
+        regex: "^{{ item }$}"
+        line: "^{{ item }}$"
+      with_items:
+        - "ServerTokens Prod"
+        - "ServerSignature Off"
+      notify: restart apache2
+
+    - name: Disable directory listing from web pages.
+      lineinfile:
+        path: /var/www/html/.htaccess
+        regex: "Options -Indexes"
+        line: "Options -Indexes"
+      notify: restart apache
