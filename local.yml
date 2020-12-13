@@ -26,7 +26,6 @@
           - vim
           - vim-nox
           - python3-psutil
-          - python3-PyMySQL
           - curl
           - wget 
           - mlocate
