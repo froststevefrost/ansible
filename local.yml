@@ -8,6 +8,8 @@
     nfsmounts:
       - { src: "192.168.1.93:/volume1/storage", path: "/storage" }
       - { src: "192.168.1.93:/volume1/GDrive", path: "/GDrive" }
+    packages:
+      
 
   tasks:
 
@@ -27,6 +29,13 @@
           - keepassxc
           - steam
         state: present
+
+    - name: Make mount points.
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: 0770
+      with_items: "{{ nfsmounts }}"
 
         #    - name: Make new fstab entries for storage.
         #      mount:
