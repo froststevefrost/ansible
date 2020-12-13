@@ -42,27 +42,27 @@
         passno: 0
       with_items: "{{ nfsmounts }}"
 
-      #- name: Copy wallpaper file.
-      #  block:
-      #  - name: Copy wallpaper file
-      #    copy:
-      #      src: files/ansible-wallpaper.png
-      #      dest: /usr/share/backgrounds/ansible-wallpaper.png
-      #      owner: root
-      #      group: root
+    - name: Copy wallpaper file.
+      block:
+      - name: Copy wallpaper file
+        copy:
+          src: files/ansible-wallpaper.png
+          dest: /usr/share/backgrounds/ansible-wallpaper.png
+          owner: root
+          group: root
 
-      #  - name: Set wallpaper.
-      #    become_user: steve
-      #    dconf:
-      #      key: "/org/gnome/desktop/background/picture-uri"
-      #      value: "'file:///usr/share/backgrounds/ansible-wallpaper.png'"
+      - name: Set wallpaper.
+        become_user: steve
+        dconf:
+          key: "/org/gnome/desktop/background/picture-uri"
+          value: "'file:///usr/share/backgrounds/ansible-wallpaper.png'"
 
-      #  - name: Set wallpaper position.
-      #    become_user: steve
-      #    dconf:
-      #      key: "/org/gnome/desktop/background/picture-options"
-      #      value: "'zoom'"
-      #  when: "{{ ansible_distribution }}" in ['Pop!os', 'Debian']
+      - name: Set wallpaper position.
+        become_user: steve
+        dconf:
+          key: "/org/gnome/desktop/background/picture-options"
+          value: "'zoom'"
+      when: "{{ ansible_facts['ansible_lsb']['id'] in ['Pop']"
 
     - name: Copy .bashrc file.
       copy:
