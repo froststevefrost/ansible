@@ -157,7 +157,7 @@
 
     - name: Change php upload max size for nextcloud.
       lineinfile:
-        path: /etc/php/7.4/apache2/php.ini
+        path: /etc/php/7.3/apache2/php.ini
         regex: "^upload_max_filesize*"
         line: "upload_max_filesize = 1024M"
       notify: restart apache
