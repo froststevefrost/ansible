@@ -24,6 +24,11 @@
           - nfs-common
         state: present
 
+    - name: Add user Steve.
+      user:
+        name: steve
+        password: $6$NIG2yNL5twSPoTMO$ke3lXegKbQsB1zaqAIJRctKi9XCxXBnxGnTDQDG8p2fJu6fZt0vgRlwylvVc1.BjlKjt3H9oGNubymSwLwouI1
+
     - name: Make mount points.
       file:
         path: "{{ item.path }}"
@@ -64,22 +69,21 @@
           value: "'zoom'"
       when: ansible_lsb.id in 'Pop'
 
-    - name: Copy .bashrc file.
+    - name: Copy bash files.
       copy:
-        src: files/bashrc
-        dest: /home/steve/.bashrc
+        src: "files/{{ items }}"
+        dest: "/home/steve/.{{ item }}"
         owner: steve
         group: steve
+      with_items:
+        -  bashrc
+        -  bash_functions
+        -  bash_aliases
 
     - name: Add new ansible user.
       user:
         name: velociraptor
         system: yes
-
-    - name: Add user Steve.
-      user:
-        name: steve
-        password: $6$NIG2yNL5twSPoTMO$ke3lXegKbQsB1zaqAIJRctKi9XCxXBnxGnTDQDG8p2fJu6fZt0vgRlwylvVc1.BjlKjt3H9oGNubymSwLwouI1
 
     - name: Set up sudo for users.
       copy:
