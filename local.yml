@@ -8,8 +8,6 @@
     nfsmounts:
       - { src: "192.168.1.93:/volume1/storage", path: "/storage" }
       - { src: "192.168.1.93:/volume1/GDrive", path: "/GDrive" }
-    packages:
-      
 
   tasks:
 
@@ -17,17 +15,13 @@
       package:
         name: 
           - htop
-          - tmux
+          - vim
           - vim-nox
-          - neovim
           - python3-psutil
           - curl
           - wget 
           - mlocate
-          - brave-browser
           - nfs-common
-          - keepassxc
-          - steam
         state: present
 
     - name: Make mount points.
@@ -37,35 +31,38 @@
         mode: 0770
       with_items: "{{ nfsmounts }}"
 
-        #    - name: Make new fstab entries for storage.
-        #      mount:
-        #        path: "{{ item.path }}"
-        #        src: "{{ item.src }}"
-        #        opts: defaults
-        #        state: mounted
-        #        fstype: nfs
-        #        dump: 0
-        #        pass: 0
-        #      with_items: "{{ nfsmounts }}"
+    - name: Make new fstab entries for storage.
+      mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        opts: defaults
+        state: mounted
+        fstype: nfs
+        dump: 0
+        pass: 0
+      with_items: "{{ nfsmounts }}"
 
-    - name: Copy wallpaper file.
-      copy:
-        src: files/ansible-wallpaper.png
-        dest: /usr/share/backgrounds/ansible-wallpaper.png
-        owner: root
-        group: root
+      #- name: Copy wallpaper file.
+      #  block:
+      #  - name: Copy wallpaper file
+      #    copy:
+      #      src: files/ansible-wallpaper.png
+      #      dest: /usr/share/backgrounds/ansible-wallpaper.png
+      #      owner: root
+      #      group: root
 
-    - name: Set wallpaper.
-      become_user: steve
-      dconf:
-        key: "/org/gnome/desktop/background/picture-uri"
-        value: "'file:///usr/share/backgrounds/ansible-wallpaper.png'"
+      #  - name: Set wallpaper.
+      #    become_user: steve
+      #    dconf:
+      #      key: "/org/gnome/desktop/background/picture-uri"
+      #      value: "'file:///usr/share/backgrounds/ansible-wallpaper.png'"
 
-    - name: Set wallpaper position.
-      become_user: steve
-      dconf:
-        key: "/org/gnome/desktop/background/picture-options"
-        value: "'zoom'"
+      #  - name: Set wallpaper position.
+      #    become_user: steve
+      #    dconf:
+      #      key: "/org/gnome/desktop/background/picture-options"
+      #      value: "'zoom'"
+      #  when: "{{ ansible_distribution }}" in ['Pop!os', 'Debian']
 
     - name: Copy .bashrc file.
       copy:
