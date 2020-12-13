@@ -62,7 +62,7 @@
         dconf:
           key: "/org/gnome/desktop/background/picture-options"
           value: "'zoom'"
-      when: "{{ ansible_facts['ansible_lsb']['id'] in ['Pop']"
+      when: "{{ ansible_facts['ansible_lsb']['id'] }} in ['Pop']"
 
     - name: Copy .bashrc file.
       copy:
