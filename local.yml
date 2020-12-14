@@ -197,6 +197,13 @@
         line: "upload_max_filesize = 1024M"
       notify: restart apache
 
+    - name: Change php buffer for nextcloud.
+      lineinfile:
+        path: /etc/php/7.3/apache2/php.ini
+        regex: "^output_buffering.*"
+        line: "output_buffering = 0"
+      notify: restart apache
+
     - name: Enable mod_rewrite for apache2.
       apache2_module:
         name: rewrite
