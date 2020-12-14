@@ -204,6 +204,12 @@
         line: "output_buffering = 0"
       notify: restart apache
 
+    - name: Change php memory limit for nextcloud.
+      lineinfile:
+        path: /etc/php/7.3/apache2/php.ini
+        regex: "^memory_limit.*"
+        line: "memory_limi = 512"
+      notify: restart apache
     - name: Enable mod_rewrite for apache2.
       apache2_module:
         name: rewrite
