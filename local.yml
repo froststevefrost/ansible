@@ -36,7 +36,6 @@
       package:
         name: 
           - htop
-          - fail2ban
           - vim
           - vim-nox
           - python3-psutil
