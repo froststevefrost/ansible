@@ -174,20 +174,3 @@
         name: rewrite
         state: present
       notify: restart apache2
-
-    - name: Disable banner from site.
-      lineinfile:
-        path: /etc/apache2/apache2.conf
-        regex: "^{{ item }}"
-        line: "^{{ item }}"
-      with_items:
-        - "ServerTokens Prod"
-        - "ServerSignature Off"
-      notify: restart apache2
-
-    - name: Disable directory listing from web pages.
-      lineinfile:
-        path: /var/www/html/.htaccess
-        regex: "Options -Indexes"
-        line: "Options -Indexes"
-      notify: restart apache
