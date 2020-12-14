@@ -178,8 +178,8 @@
     - name: Disable banner from site.
       lineinfile:
         path: /etc/apache2/apache2.conf
-        regex: "^{{ item }$}"
-        line: "^{{ item }}$"
+        regex: "^{{ item }}"
+        line: "^{{ item }}"
       with_items:
         - "ServerTokens Prod"
         - "ServerSignature Off"
