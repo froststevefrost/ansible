@@ -43,6 +43,7 @@
           - curl
           - wget 
           - mlocate
+          - php-apcu
           - nfs-common
           - mariadb-server
           - apache2
