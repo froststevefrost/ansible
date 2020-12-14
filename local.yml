@@ -210,6 +210,18 @@
         regex: "^memory_limit.*"
         line: "memory_limi = 512"
       notify: restart apache
+
+    - name: Add caldav and stuff to apache2.conf
+      lineinfile:
+        path: /etc/apache2/apache2.conf
+        regex: "^{{ item }}.*"
+        line: "{{ item }}"
+        insertafter: EOF
+      with_items:
+        - "Redirect 301 /.well-known/carddav /nextcloud/remote.php/dav"
+        - "Redirect 301 /.well-known/caldav /nextcloud/remote.php/dav"
+      notify: restart apache
+
     - name: Enable mod_rewrite for apache2.
       apache2_module:
         name: rewrite
