@@ -56,6 +56,10 @@
           - php-xml
           - php-mbstring
           - php-mysql
+          - php-intl
+          - php-bcmath
+          - php-gmp
+          - php-imagick
         state: present
 
     - name: Update locate db.
@@ -185,6 +189,7 @@
       with_items:
         - "/etc/php/7.3/apache2/php.ini"
         - "/etc/apache2/apache2.conf"
+        - "/var/www/html/nextcloud/config/config.php"
 
     - name: Change php post max size for nextcloud.
       lineinfile:
@@ -211,7 +216,15 @@
       lineinfile:
         path: /etc/php/7.3/apache2/php.ini
         regex: "^memory_limit.*"
-        line: "memory_limi = 512"
+        line: "memory_limit = 512M"
+      notify: restart apache
+
+    - name: Add APCu memcache.
+      lineinfile:
+        path: /var/www/html/nextcloud/config/config.php
+        regex: "^   'memcache.local' => '\OC\Memcache\APCu',"
+        line: "  'memcache.local' => '\OC\Memcache\APCu',"
+        insertafter: "'installed' => true,"
       notify: restart apache
 
     - name: Add caldav and stuff to apache2.conf
