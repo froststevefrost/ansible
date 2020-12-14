@@ -58,6 +58,8 @@
           - php-mysql
           - php-intl
           - php-bcmath
+          - certbot
+          - python-certbot-apache
           - php-gmp
           - php-imagick
         state: present
@@ -240,6 +242,12 @@
 
     - name: Enable mod_rewrite for apache2.
       apache2_module:
-        name: rewrite
+        name: "{{ item }}"
         state: present
+      with_items:
+        - headers
+        - rewrite
       notify: restart apache
+
+    - name: Run certbot to get ssl certs.
+      
