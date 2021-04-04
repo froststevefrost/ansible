@@ -64,6 +64,7 @@
         user: steve
         state: present
         key: "{{ lookup('file', 'files/id_ed25519.pub') }}"
+      ignore_errors: true
 
     - name: Make new fstab entries for storage.
       mount:
