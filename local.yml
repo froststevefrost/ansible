@@ -21,7 +21,7 @@
         name: sshd
         state: restarted
         
-  pre-tasks:
+  pre_tasks:
     - name: Update all packages to the latest version
       apt:
         upgrade: dist
