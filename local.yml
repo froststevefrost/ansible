@@ -6,9 +6,9 @@
 
   vars:
     nfsmounts:
-      - { src: "192.168.1.93:/volume1/storage", path: "/storage" }
-      - { src: "192.168.1.93:/volume1/GDrive", path: "/GDrive" }
-      - { src: "192.168.1.93:/volume1/NextCloud", path: "/NextCloud" }
+      - { src: "192.168.137.20:/volume1/storage", path: "/storage" }
+      - { src: "192.168.137.20:/volume1/GDrive", path: "/GDrive" }
+      - { src: "192.168.137.20:/volume1/NextCloud", path: "/NextCloud" }
 
   handlers:
     - name: restart apache
@@ -21,6 +21,12 @@
         name: sshd
         state: restarted
         
+  pre-tasks:
+    - name: Update all packages to the latest version
+      apt:
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
   tasks:
 
     - name: Update apt cache
@@ -28,67 +34,35 @@
         update_cache: true
         cache_valid_time: 3600
 
-    - name: Update all packages to the latest version
-      apt:
-        upgrade: dist
-
-    - name: Install packages.
+    - name: Install packages
       package:
         name: 
           - htop
-          - vim
           - vim-nox
-          - python3-psutil
+          - inxi
+          - neofetch
           - curl
           - wget 
           - mlocate
-          - php-apcu
           - nfs-common
-          - mariadb-server
-          - apache2
-          - mariadb-client
-          - php
-          - php-gd
-          - sqlite
-          - php-curl
-          - php-zip
-          - php-xml
-          - php-mbstring
-          - php-mysql
-          - php-intl
-          - php-bcmath
-          - certbot
-          - python-certbot-apache
-          - php-gmp
-          - php-imagick
         state: present
 
     - name: Update locate db.
       shell: updatedb        
       changed_when: false
-
-    - name: Change pi password.
-      user:
-        name: pi
-        password: $6$SiG00PwH/UQYGJEF$h9iudpBeS7O794ChSKLTezKHS2nXz6pDWE2rWbWlwlm.P3kSPk.k1pxxBl3NAH/JRDuWu7PAVJyqw4dYqWAzM0
         
     - name: Add user Steve.
       user:
         name: steve
         password: $6$NIG2yNL5twSPoTMO$ke3lXegKbQsB1zaqAIJRctKi9XCxXBnxGnTDQDG8p2fJu6fZt0vgRlwylvVc1.BjlKjt3H9oGNubymSwLwouI1
+        groups: wheel,sudo
+        append: true
 
     - name: Copy steve's ssh key
       authorized_key:
         user: steve
         state: present
         key: "{{ lookup('file', 'files/id_ed25519.pub') }}"
-
-    - name: Make mount points.
-      file:
-        path: "{{ item.path }}"
-        state: directory
-        mode: 0770
-      with_items: "{{ nfsmounts }}"
 
     - name: Make new fstab entries for storage.
       mount:
@@ -97,8 +71,6 @@
         opts: defaults
         state: mounted
         fstype: nfs
-        dump: 0
-        passno: 0
       with_items: "{{ nfsmounts }}"
 
     - name: Copy wallpaper file.
@@ -123,7 +95,7 @@
           value: "'zoom'"
       when: ansible_lsb.id in 'Pop'
 
-    - name: Copy bash files.
+    - name: Copy dot files.
       copy:
         src: "files/{{ item }}"
         dest: "/home/steve/.{{ item }}"
@@ -156,8 +128,8 @@
       cron:
         name: Ansible auto-provision
         user: velociraptor
-        minute: "*/10"
-        job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git
+        special_time: daily
+        job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git > /dev/null 2>&1
 
     - name: Update sshd configs
       copy:
@@ -165,88 +137,5 @@
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
-        mode: 0644
+        mode: 0440
       notify: restart sshd
-
-    - name: Pull latest NextCloud zip
-      unarchive:
-        src: https://download.nextcloud.com/server/releases/nextcloud-20.0.3.zip
-        dest: /var/www/html/
-        remote_src: true
-
-    - name: Change ownership of nextcloud directory.
-      file: 
-        path: /var/www/html/nextcloud
-        owner: www-data
-        group: www-data
-        recurse: true
-        state: directory
-      notify: restart apache
-
-    - name: Make copies of config files
-      copy:
-        src: "{{ item }}"
-        dest: "{{ item }}.bkup"
-      with_items:
-        - "/etc/php/7.3/apache2/php.ini"
-        - "/etc/apache2/apache2.conf"
-        - "/var/www/html/nextcloud/config/config.php"
-
-    - name: Change php post max size for nextcloud.
-      lineinfile:
-        path: /etc/php/7.3/apache2/php.ini
-        regex: "^post_max_size.*"
-        line: "post_max_size = 1024M"
-      notify: restart apache
-
-    - name: Change php upload max size for nextcloud.
-      lineinfile:
-        path: /etc/php/7.3/apache2/php.ini
-        regex: "^upload_max_filesize*"
-        line: "upload_max_filesize = 1024M"
-      notify: restart apache
-
-    - name: Change php buffer for nextcloud.
-      lineinfile:
-        path: /etc/php/7.3/apache2/php.ini
-        regex: "^output_buffering.*"
-        line: "output_buffering = 0"
-      notify: restart apache
-
-    - name: Change php memory limit for nextcloud.
-      lineinfile:
-        path: /etc/php/7.3/apache2/php.ini
-        regex: "^memory_limit.*"
-        line: "memory_limit = 512M"
-      notify: restart apache
-
-    - name: Add APCu memcache.
-      lineinfile:
-        path: /var/www/html/nextcloud/config/config.php
-        regex: "^   'memcache.local' => '\OC\Memcache\APCu',"
-        line: "  'memcache.local' => '\OC\Memcache\APCu',"
-        insertafter: "'installed' => true,"
-      notify: restart apache
-
-    - name: Add caldav and stuff to apache2.conf
-      lineinfile:
-        path: /etc/apache2/apache2.conf
-        regex: "^{{ item }}.*"
-        line: "{{ item }}"
-        insertafter: EOF
-      with_items:
-        - "Redirect 301 /.well-known/carddav /nextcloud/remote.php/dav"
-        - "Redirect 301 /.well-known/caldav /nextcloud/remote.php/dav"
-      notify: restart apache
-
-    - name: Enable mod_rewrite for apache2.
-      apache2_module:
-        name: "{{ item }}"
-        state: present
-      with_items:
-        - headers
-        - rewrite
-      notify: restart apache
-
-    - name: Run certbot to get ssl certs.
-      
