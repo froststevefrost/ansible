@@ -41,7 +41,6 @@
           - wget 
           - mlocate
           - nfs-common
-          - steam
           - gnome-tweak-tool
           - git
           - ufw
