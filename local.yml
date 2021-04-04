@@ -31,14 +31,14 @@
 
     - name: Install packages
       package:
-        name: 
+        name:
           - htop
           - vim-nox
           - inxi
           - neofetch
           - curl
           - keepassxc
-          - wget 
+          - wget
           - mlocate
           - nfs-common
           - gnome-tweak-tool
