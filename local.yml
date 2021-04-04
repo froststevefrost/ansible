@@ -57,6 +57,7 @@
         password: $6$NIG2yNL5twSPoTMO$ke3lXegKbQsB1zaqAIJRctKi9XCxXBnxGnTDQDG8p2fJu6fZt0vgRlwylvVc1.BjlKjt3H9oGNubymSwLwouI1
         groups: wheel,sudo
         append: true
+        ignore_errors: true
 
     - name: Copy steve's ssh key
       authorized_key:
