@@ -8,7 +8,6 @@
     nfsmounts:
       - { src: "192.168.137.20:/volume1/storage", path: "/storage" }
       - { src: "192.168.137.20:/volume1/GDrive", path: "/GDrive" }
-      - { src: "192.168.137.20:/volume1/NextCloud", path: "/NextCloud" }
 
   handlers:
     - name: restart apache
@@ -95,7 +94,7 @@
         dconf:
           key: "/org/gnome/desktop/background/picture-options"
           value: "'zoom'"
-      when: ansible_lsb.id in 'Pop'
+        when: ansible_lsb.id in 'Pop'
 
     - name: Copy dot files.
       copy:
