@@ -22,4 +22,4 @@ shopt -s autocd
 HISTSIZE= HISTFILESIZE=
 
 # Change default editor
-export EDITOR=/usr/bin/vim
+export EDITOR=$(which vim)
