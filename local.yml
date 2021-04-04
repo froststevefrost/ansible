@@ -6,15 +6,10 @@
 
   vars:
     nfsmounts:
-      - { src: "192.168.137.20:/volume1/storage", path: "/storage" }
-      - { src: "192.168.137.20:/volume1/GDrive", path: "/GDrive" }
+      - { src: "/storage", path: "/storage" }
+      - { src: "/GDrive", path: "/GDrive" }
 
   handlers:
-    - name: restart apache
-      service:
-        name: apache2
-        state: restarted
-
     - name: restart sshd
       service:
         name: sshd
@@ -32,6 +27,7 @@
       apt:
         update_cache: true
         cache_valid_time: 3600
+      when: ansible_os_family == "Debian"
 
     - name: Install packages
       package:
@@ -41,9 +37,14 @@
           - inxi
           - neofetch
           - curl
+          - keepassxc
           - wget 
           - mlocate
           - nfs-common
+          - steam-installer
+          - gnome-tweak-tool
+          - git
+          - ufw
         state: present
 
     - name: Update locate db.
@@ -68,7 +69,7 @@
     - name: Make new fstab entries for storage.
       mount:
         path: "{{ item.path }}"
-        src: "{{ item.src }}"
+        src: "192.168.137.20:/volume1{{ item.src }}"
         opts: defaults
         state: mounted
         fstype: nfs
@@ -94,7 +95,6 @@
         dconf:
           key: "/org/gnome/desktop/background/picture-options"
           value: "'zoom'"
-        when: ansible_lsb.id in 'Pop'
 
     - name: Copy dot files.
       copy:
@@ -109,11 +109,6 @@
         - bash_logout
         - vimrc
 
-    - name: Add new ansible user.
-      user:
-        name: velociraptor
-        system: yes
-
     - name: Set up sudo for users.
       copy:
         src: "files/sudoer_{{ item }}"
@@ -122,14 +117,13 @@
         group: root
         mode: 0440
       with_items: 
-        - velociraptor
         - steve
 
     - name: Add ansible-pull cron job
       cron:
         name: Ansible auto-provision
-        user: velociraptor
-        special_time: daily
+        user: root
+        hour: 10
         job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git > /dev/null 2>&1
 
     - name: Update sshd configs
@@ -138,5 +132,5 @@
         dest: /etc/ssh/sshd_config
         owner: root
         group: root
-        mode: 0440
+        mode: 0644
       notify: restart sshd
