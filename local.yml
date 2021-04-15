@@ -101,7 +101,7 @@
       cron:
         name: Ansible auto-provision
         user: root
-        hour: 10
+        hour: '10'
         job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git > /dev/null 2>&1
 
     - name: Update sshd configs
