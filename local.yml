@@ -55,7 +55,6 @@
           - keepassxc
           - wget
           - mlocate
-          - nfs-common
           - git
           - chrony
         state: present
@@ -65,12 +64,14 @@
         name:
           - ufw
           - gnome-tweak-tool
+          - nfs-common
       when: ansible_os_family == "Debian"
 
     - name: Install RPM packages
       package:
         name:
           - firewalld
+          - nfs-utils
       when: ansible_os_family == "RedHat"
 
     - name: Update locate db.
