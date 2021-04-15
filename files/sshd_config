@@ -11,7 +11,7 @@
 # default value.
 
 Port 69
-AllowUsers steve pi
+AllowUsers steve
 #AddressFamily any
 #ListenAddress 0.0.0.0
 #ListenAddress ::
