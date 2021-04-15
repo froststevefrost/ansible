@@ -55,11 +55,22 @@
           - wget
           - mlocate
           - nfs-common
-          - gnome-tweak-tool
           - git
-          - ufw
           - chrony
         state: present
+
+    - name: Install ubuntu packages
+      package:
+        name:
+          - ufw
+          - gnome-tweak-tool
+      when: ansible_os_family == "Debian"
+
+    - name: Install RPM packages
+      package:
+        name:
+          - firewalld
+      when: ansible_os_family == "RedHat"
 
     - name: Update locate db.
       shell: updatedb        
