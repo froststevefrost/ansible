@@ -5,6 +5,7 @@
   become: true
 
   vars:
+    nfspath: 192.168.137.20:/volume1
     nfsmounts:
       - { src: "/storage", path: "/storage" }
       - { src: "/GDrive", path: "/GDrive" }
@@ -43,7 +44,7 @@
         cache_valid_time: 3600
       when: ansible_os_family == "Debian"
 
-    - name: Install packages
+    - name: Install base packages
       package:
         name:
           - htop
@@ -86,7 +87,7 @@
     - name: Make new fstab entries for storage.
       mount:
         path: "{{ item.path }}"
-        src: "192.168.137.20:/volume1{{ item.src }}"
+        src: "{{ nfspath }}{{ item.src }}"
         opts: defaults
         state: mounted
         fstype: nfs
