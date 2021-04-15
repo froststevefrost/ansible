@@ -14,6 +14,11 @@
       service:
         name: sshd
         state: restarted
+
+    - name: restart chrony
+      service:
+        name: chronyd
+        state: restarted
         
   pre_tasks:
     - name: Update all packages to the latest version
@@ -44,6 +49,7 @@
           - gnome-tweak-tool
           - git
           - ufw
+          - chrony
         state: present
 
     - name: Update locate db.
@@ -78,6 +84,11 @@
         - bash_aliases
         - bash_logout
         - vimrc
+
+    - name: Set timezone
+      timezone:
+        name: America/Anchorage
+      notify: restart chrony
 
     - name: Set up sudo for users.
       copy:
