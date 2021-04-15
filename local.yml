@@ -19,7 +19,16 @@
       service:
         name: chronyd
         state: restarted
-        
+
+    - name: restart firewalld
+      service:
+        name: firewalld
+        state: restarted
+
+    - name: restart ufw
+      ufw:
+        state: reloaded
+
   pre_tasks:
     - name: Update all packages to the latest version
       apt:
