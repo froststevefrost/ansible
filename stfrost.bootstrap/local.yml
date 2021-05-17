@@ -1,0 +1,33 @@
+---
+- name: Bootstrap for provisioning
+  hosts: localhost
+  become: true
+  vars:
+    cdn_username:
+    cdn_password:
+    repos:
+      - rhel-8-for-x86_64-baseos-rpms
+
+  tasks:
+
+    - block:
+
+      - name: Register the server
+        redhat_subscription:
+          username: "{{ cdn_username }}"
+          password: "{{ cdn_password }}"
+          auto_attach: true
+
+      - name: Disable all repositories
+        rhsm_repository:
+          name: '*'
+          state: disabled
+
+      - name: Enable core RHEL repositories
+        rhsm_repository:
+          name: "{{ repos }}"
+          state: enabled
+
+    when:
+      - cdn_username != ""
+      - cdn_password != ""
