@@ -58,6 +58,7 @@
           - git
           - chrony
         state: present
+      when: ansible_os_family == "Debian"
 
     - name: Install ubuntu packages
       package:
