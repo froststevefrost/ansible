@@ -34,7 +34,7 @@
     - name: Update all packages to the latest version
       apt:
         upgrade: dist
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['distribution'] == "Debian"
 
   tasks:
 
@@ -42,7 +42,7 @@
       apt:
         update_cache: true
         cache_valid_time: 3600
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['distribution'] == "Debian"
 
     - name: Install base packages
       package:
@@ -58,7 +58,7 @@
           - git
           - chrony
         state: present
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['distribution'] == "Debian"
 
     - name: Install ubuntu packages
       package:
@@ -66,14 +66,14 @@
           - ufw
           - gnome-tweak-tool
           - nfs-common
-      when: ansible_os_family == "Debian"
+      when: ansible_facts['distribution'] == "Debian"
 
     - name: Install RPM packages
       package:
         name:
           - firewalld
           - nfs-utils
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts['distribution'] == "RedHat"
 
     - name: Update locate db.
       shell: updatedb
