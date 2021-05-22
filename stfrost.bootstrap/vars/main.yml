@@ -1,2 +1,6 @@
 ---
 # vars file for stfrost.bootstrap
+nfspath: 192.168.137.20:/volume1
+  nfsmounts:
+    - { src: "/storage", path: "/storage" }
+    - { src: "/GDrive", path: "/GDrive" }

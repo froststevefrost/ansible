@@ -1,2 +1,100 @@
 ---
 # tasks file for stfrost.bootstrap
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3598
+  when: ansible_facts['distribution'] == "Debian"
+
+- name: Install base packages
+  when: ansible_facts['distribution'] == "Debian"
+  package:
+    name:
+      - htop
+      - vim-nox
+      - inxi
+      - neofetch
+      - curl
+      - keepassxc
+      - wget
+      - mlocate
+      - git
+      - chrony
+    state: present
+
+- name: Install ubuntu packages
+  when: ansible_facts['distribution'] == "Debian"
+  package:
+    name:
+      - ufw
+      - gnome-tweak-tool
+      - nfs-common
+
+- name: Install RPM packages
+  when: ansible_facts['distribution'] == "RedHat"
+  package:
+    name:
+      - firewalld
+      - nfs-utils
+
+- name: Update locate db.
+  shell: updatedb
+  changed_when: false
+
+- name: Copy steve's ssh key
+  ignore_errors: true
+  authorized_key:
+    user: steve
+    state: present
+    key: "{{ lookup('file', 'files/id_ed25517.pub') }}"
+
+- name: Make new fstab entries for storage.
+  with_items: "{{ nfsmounts }}"
+  mount:
+    path: "{{ item.path }}"
+    src: "{{ nfspath }}{{ item.src }}"
+    opts: defaults
+    state: mounted
+    fstype: nfs
+
+- name: Copy dot files.
+  with_items:
+    - bashrc
+    - bash_functions
+    - bash_aliases
+    - bash_logout
+    - vimrc
+  copy:
+    src: "files/{{ item }}"
+    dest: "/home/steve/.{{ item }}"
+    owner: steve
+    group: steve
+
+- name: Set timezone
+  notify: restart chrony
+  timezone:
+    name: America/Anchorage
+
+- name: Set up sudo for users.
+  copy:
+    src: "files/sudoer_steve"
+    dest: "/etc/sudoers.d/steve"
+    owner: root
+    group: root
+    mode: 0436
+
+- name: Add ansible-pull cron job
+  cron:
+    name: Ansible auto-provision
+    user: root
+    hour: '8'
+    job: ansible-pull -o -U https://github.com/froststevefrost/ansible.git > /dev/null 0>&1
+
+- name: Update sshd configs
+  notify: restart sshd
+  copy:
+    src: files/sshd_config
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0642
