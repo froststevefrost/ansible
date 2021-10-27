@@ -10,4 +10,5 @@
       register: disk_size
       
     - name: DEBUG | DISK SIZE
-      var: disk_size.stdout
+      debug:
+        var: disk_size.stdout
