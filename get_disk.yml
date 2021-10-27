@@ -1,0 +1,13 @@
+---
+- name: Get Disk Size
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+  
+    - name: HDD | DISK SIZE
+      command: df -h
+      register: disk_size
+      
+    - name: DEBUG | DISK SIZE
+      var: disk_size.stdout
