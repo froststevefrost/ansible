@@ -1,32 +1,38 @@
-set nocompatible
 syntax enable
-set shortmess+=I
-set number
-set relativenumber
-set laststatus=2
-set backspace=indent,eol,start
+set nocompatible
+set expandtab
+set autoindent
+set smartindent
+set shiftwidth=2
+set tabstop=2
 set hidden
+set relativenumber
+set number
+set undofile
+set spell
+set title
 set ignorecase
 set smartcase
 set incsearch
-nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
-set noerrorbells visualbell t_vb=
-hi Comment cterm=italic gui=italic ctermfg=darkgray
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | exe "normal! zz" | endif
-filetype plugin indent on
-set showcmd         " Show (partial) command in status line.
-set showmatch       " Show matching brackets.
-set ignorecase      " Do case insensitive matching
-set smartcase       " Do smart case matching
-set incsearch       " Incremental search
-set autowrite       " Automatically save before commands like :next and :make
-set hidden          " Hide buffers when they are abandoned
-set tabstop=2       " Sets the number of columns a tab should be
-set shiftwidth=2    " Sets the number of columns text is indented for reindent operations
-set expandtab       " When pressing tab, this will insert spaces instead of a single block tab
-set autoindent      " Automatically inserts a tab when applicable
-set smartindent     " Automatically inserts a tab, but intelligently based on code language. Recommended to have autoindent enabled w/ this option.
-function! <SID>StripTrailingWhitespace()
+set showcmd
+set backspace=indent,eol,start
+set laststatus=2
+set shortmess+=I
+set wildmode=longest:full,full
+set nowrap
+set list
+set listchars=tab:->\ ,trail:•
+set mouse=a
+set scrolloff=8
+set sidescrolloff=8
+set nojoinspaces
+set splitright
+set confirm
+set exrc
+set backup
+set backupdir=~/.local/share/vim/backup//
+set updatetime=300
+set redrawtime=10000                                                                                                                                                                                                                                                                function! <SID>StripTrailingWhitespace()
     " Preparation: save last search, and cursor position.
     let _s=@/
     let l = line(".")
