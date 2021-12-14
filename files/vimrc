@@ -1,10 +1,12 @@
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | exe "normal! zz" | endif
 syntax enable
+hi Comment cterm=italic gui=italic ctermfg=darkgray
 set nocompatible
-set expandtab
 set autoindent
 set smartindent
 set shiftwidth=2
-set tabstop=2
+set tabstop=4
+set expandtab
 set hidden
 set relativenumber
 set number
@@ -20,8 +22,6 @@ set laststatus=2
 set shortmess+=I
 set wildmode=longest:full,full
 set nowrap
-set list
-set listchars=tab:->\ ,trail:•
 set mouse=a
 set scrolloff=8
 set sidescrolloff=8
@@ -33,3 +33,5 @@ set backup
 set backupdir=~/.local/share/vim/backup//
 set updatetime=300
 set redrawtime=10000
+set list
+set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
