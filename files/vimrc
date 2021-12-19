@@ -1,27 +1,36 @@
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | exe "normal! zz" | endif
-syntax enable
-hi Comment cterm=italic gui=italic ctermfg=darkgray
-set nocompatible
+syntax on
+set expandtab
 set autoindent
 set smartindent
 set shiftwidth=2
-set tabstop=4
-set expandtab
+set tabstop=2
+set softtabstop=2
+set scrolloff=8
+set numberwidth=4
+set undodir=~/.config/nvim/undodir
+set nobackup
+set noswapfile
 set hidden
+set splitbelow
+set splitright
+set updatetime=250
 set relativenumber
 set number
+set signcolumn=number
 set undofile
-set spell
 set title
 set ignorecase
 set smartcase
 set incsearch
+set nohlsearch
 set showcmd
 set backspace=indent,eol,start
 set laststatus=2
 set shortmess+=I
 set wildmode=longest:full,full
 set nowrap
+set list
+set listchars=tab:->\ ,trail:•
 set mouse=a
 set scrolloff=8
 set sidescrolloff=8
@@ -29,9 +38,33 @@ set nojoinspaces
 set splitright
 set confirm
 set exrc
-set backup
-set backupdir=~/.local/share/vim/backup//
 set updatetime=300
 set redrawtime=10000
-set list
-set listchars=tab:»\ ,extends:›,precedes:‹,nbsp:·,trail:·
+set laststatus=2
+set noerrorbells visualbell t_vb=
+filetype plugin indent on
+
+nmap Q <Nop>
+
+function! <SID>StripTrailingWhitespace()
+"# Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+nmap <silent> <Leader><space> :call <SID>StripTrailingWhitespace()<CR>
+
+
+" Have Vim jump to the last position when reopening a file
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | exe "normal! zz" | endif
+
+
+"" Colors
+set background=dark
+set termguicolors
+hi Comment cterm=italic gui=italic ctermfg=darkgray
