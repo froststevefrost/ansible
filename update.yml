@@ -1,0 +1,51 @@
+---
+
+- hosts: pihole
+  become: true
+  gather_facts: true
+
+  tasks:
+
+  - name: Update all packages via APT
+    apt:
+      name: '*'
+      state: latest
+      update_cache: true
+      only_upgrade: true
+    register: apt_update_status
+
+  - name: Remove unneeded packages
+    apt:
+      autoremove: true
+
+  - name: Update Pihole
+    command: pihole -up
+    register: pihole_update_status
+    changed_when: "'Everything is up to date' not in pihole_update_status.stdout"
+
+  - name: Reboot if packages were updated
+    reboot:
+      post_reboot_delay: 60
+    when: apt_update_status.changed
+
+  - name: Display pihole update status
+    debug:
+      var: pihole_update_status.stdout_lines
+
+- hosts: storage
+  become: true
+  gather_facts: true
+
+  tasks:
+
+  - name: Update all packages via APT
+    apt:
+      name: '*'
+      state: latest
+      update_cache: true
+      only_upgrade: true
+    register: apt_update_status
+
+  - name: Remove unneeded packages
+    apt:
+      autoremove: true
